@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { transcode } from "buffer";
+import { async } from "q";
 const Request = require('express');
 // @ts-check
 const express = require('express');
@@ -24,7 +26,7 @@ app.use(bodyparser());
  
 
 app.get('/', function (req: Request, res: Response, next: NextFunction) {
-    res.send('hello world')
+    res.send('hello world');
   })
 
 app.get('/api/getTodos', async (req: Request, res: Response, next: NextFunction) => {
@@ -36,15 +38,17 @@ app.get('/api/getTodos', async (req: Request, res: Response, next: NextFunction)
     }
 });
 
-app.post('/api/addTodo', function(req: Request, res: Response, next: NextFunction){
-    collection.insert([{title: req.body.title, finished: req.body.finished}])
-    .catch((err: Error) => {
-        res.status(500);
-    })
-    .then(() => {
-        res.status(200);
-    })
-})
+app.post('/api/addTodo', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await collection.insert([{title: req.body.title, finished: req.body.finished}]);
+        const data = await collection.find({});
+        console.log(JSON.stringify(data));
+        res.status(200).json(data);
+    }
+    catch {
+        next();
+    }
+});
 /* 
 
 app.get('/api/v1/user/:id', (req, res, next) => {
@@ -79,6 +83,7 @@ app.get('/api/v1/users/:id', async (req, res, next) => {
 
     }
 });
+ */
 app.use((err: any, req: Request, res: Response) => {
     if(req.xhr) {
         res.status(500).json({
@@ -87,7 +92,6 @@ app.use((err: any, req: Request, res: Response) => {
         })
     }
 })
- */
 
 
 app.listen(5098, () => {
