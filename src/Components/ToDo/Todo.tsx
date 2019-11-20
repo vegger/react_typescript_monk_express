@@ -4,9 +4,9 @@ import { observable, computed } from 'mobx';
 export class Todo {
     @observable private _title: string;
     @observable private _finished: boolean;
-    private _key: number;
-    constructor(title: string, finished: boolean ){
-        this._key = Math.random();
+    private _key: string;
+    constructor(key: string, title: string, finished: boolean ){
+        this._key = key;
         this._title = title;
         this._finished = finished;
     }
@@ -19,16 +19,16 @@ export class Todo {
         this._finished = finished;
     }
 
+    @computed public get key(){
+        return this._key;
+    }
+
     @computed public get title(){
         return this._title;
     }
 
     @computed public get finished(){
         return this._finished;
-    }
-
-    public get key(){
-        return this._key;
     }
 }
 

@@ -15,6 +15,7 @@ const TodoSetter: React.FC = () => {
     }
     const handleSubmit = () => {
         todoStore.addTodo(title, finished);
+        setTitle('');
     }
     return <div>
         <input onChange={ handleTitleInput } type="text" name="title"/>

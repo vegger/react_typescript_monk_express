@@ -15,50 +15,39 @@ class TodoStore {
     @observable _todos: Todo[] = [];
 
     constructor(){
-        this.fetchdata();
+        this.updateTodoList();
     }
 
-    private fetchdata = async() => {
-        try{
-          let res = await fetch('http://localhost:5098/api/getTodos');
-          let fetchData: GetTodosResponse = await res.json();
-          for(let i of fetchData){
-            var todo = new Todo(i.title, i.finished);
-            this._todos.push(todo);
-          }
-        }
-        catch(error){
-          console.log("Error: " + error);
-        }
-    }  
-
-    public addTodo = async(_title: string, _finished: boolean) => {
-        const options = {
-            method: 'POST',
-            body: JSON.stringify({title: _title, finished: _finished}),
-            headers: {
-                'Content-Type': 'application/json'
+    private updateTodoList = async() => {
+        try {
+            const res = await axios.get('http://localhost:5098/api/getTodos');
+            if(JSON.stringify(res.data) !== JSON.stringify(this._todos)){
+                var newList = [];
+                for( let i of res.data ){
+                    var todo = new Todo(i._id, i.title, i.finished);
+                    newList.push(todo);
+                }
+                this._todos = newList;
             }
         }
-        try {
-            await fetch('http://localhost:5098/api/addTodo', options);
-            var todo = new Todo(_title, _finished);
-            this._todos.push(todo);
-        }
         catch(error){
-            console.log("Error while adding a todo: " + error);
+            console.log("Error: " + error);
         }
-/*         try {
-            await fetch('http://localhost:5098/api/addTodo/' + _title + "/" + _finished);
-            var todo = new Todo(_title, _finished);
-            this._todos.push(todo);
-        } catch (error) {
-            console.log(error);
-            alert("Hat nicht funktioniert");
-        } */
     }
 
-    @computed
+    public addTodo = async(_title: string, _finished: boolean) => {
+        try{
+            await axios.post('http://localhost:5098/api/addTodo', {
+                title: _title,
+                finished: _finished
+            });
+            this.updateTodoList();
+        }
+        catch(error){
+            console.log("AddTodo " + error.message);
+        }
+    }
+
     public get todos(){
         return this._todos;
     }
