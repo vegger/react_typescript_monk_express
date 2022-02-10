@@ -16,7 +16,7 @@
     "mobx-react": "^6.1.4",
     "mongodb": "1.4.1",
     "monk": "^7.1.1",
-    "node-sass": "4.13.0",
+    "node-sass": "7.0.0",
     "nodemon": "^1.19.4",
     "react": "16.11.0",
     "react-dom": "16.11.0",
